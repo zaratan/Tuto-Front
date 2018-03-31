@@ -1,0 +1,22 @@
+{
+  "name": "thp-webpack",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:denispasin/Tuto-Webpack.git",
+  "author": "Denis <Zaratan> Pasin <denis@pasin.fr>",
+  "license": "MIT",
+  "browserslist": [
+    "> 1%"
+  ],
+  "scripts": {
+    "dev": "babel webpack.common.babel.js > webpack.common.js && webpack --config webpack.common.js --progress -d --watch"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.0.0-beta.42",
+    "@babel/core": "^7.0.0-beta.42",
+    "@babel/preset-env": "^7.0.0-beta.42",
+    "babel-loader": "^8.0.0-beta.2",
+    "webpack": "^4.4.1",
+    "webpack-cli": "^2.0.13"
+  }
+}
