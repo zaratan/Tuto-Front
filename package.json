@@ -9,7 +9,9 @@
     "> 1%"
   ],
   "scripts": {
-    "dev": "babel webpack.common.babel.js > webpack.common.js && webpack --config webpack.common.js --progress -d --watch"
+    "dev:babel": "babel webpack.common.babel.js > webpack.common.js",
+    "dev": "yarn dev:babel && webpack-dev-server -d --progress --config webpack.common.js",
+    "dev:build": "yarn dev:babel && webpack --config webpack.common.js --progress -d --watch"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.42",
@@ -17,7 +19,8 @@
     "@babel/preset-env": "^7.0.0-beta.42",
     "babel-loader": "^8.0.0-beta.2",
     "webpack": "^4.4.1",
-    "webpack-cli": "^2.0.13"
+    "webpack-cli": "^2.0.13",
+    "webpack-dev-server": "^3.1.1"
   },
   "dependencies": {
     "jquery": "^3.3.1",

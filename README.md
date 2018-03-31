@@ -128,3 +128,45 @@ import $ from 'jquery'
 #### Les supprimer du html
 
 Tout marche, on peut recharger notre page et le JS marche encore :)
+
+## Step 3: On utilise webpack-dev-server
+
+Plutôt qu'utiliser un `--watch` qui recompile tout. On va passer par un "server".
+Ça a deux avantages:
+- La page est rechargée automatiquement dans notre navigateur a chaque changement;
+- On peut mettre des breakpoint et debug directement dans le JS moderne.
+
+### Étapes
+
+#### Ajouter la librairie
+```bash
+yarn add -D webpack-dev-server
+```
+
+#### Changer la configuration de webpack
+
+On ajoute une section devServer dans `webpack.common.babel.js` indiquant au server qu'il doit servir les fichiers se trouvant dans le dossier `dist`:
+
+```js webpack.common.babel.js
+devServer: {
+  contentBase: './dist',
+}
+```
+
+#### Changer nos scripts dans le package.json
+
+On remplace les scripts précédents par ceux ci:
+```json package.json
+"scripts": {
+  "dev:babel": "babel webpack.common.babel.js > webpack.common.js",
+  "dev": "yarn dev:babel && webpack-dev-server -d --progress --config webpack.common.js",
+  "dev:build": "yarn dev:babel && webpack --config webpack.common.js --progress -d --watch"
+}
+```
+
+- `dev:babel`: transpile avec babel le fichier de config de webpack;
+- `dev:build`: Est notre commande précédente (mais utilise la tache `dev:babel`);
+- `dev`: Lance notre webpack-dev-server avec des options similaires a notre tache précédente.
+
+On peut maintenant lancer `yarn dev` et visiter `localhost:8080` pour voir notre page.
+Maintenant avec le chrome devtool, dans les sources, dans le dossier webpack on peut trouver nos sources Javascript de base (et elles sont débugables).

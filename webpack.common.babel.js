@@ -7,6 +7,9 @@ export default {
     filename: 'index.js',
     path: path.resolve(__dirname, 'dist')
   },
+  devServer: {
+    contentBase: './dist',
+  },
   module: {
     rules: [
       {
