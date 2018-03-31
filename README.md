@@ -106,3 +106,25 @@ On peut donc maintenant l'exécuter en faisant:
 ```bash
 yarn dev
 ```
+
+## Step 2: On importe nos librairies
+
+On importe nos librairies depuis le js plutôt que les inclure alamain dans le html:
+
+### Étapes
+
+#### Ajouter les librairies
+```bash
+yarn add lodash
+yarn add jquery
+```
+
+#### Importer les librairies
+```js index.js
+import _ from 'lodash'
+import $ from 'jquery'
+```
+
+#### Les supprimer du html
+
+Tout marche, on peut recharger notre page et le JS marche encore :)
