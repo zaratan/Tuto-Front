@@ -518,3 +518,29 @@ import './index.scss'
 ```
 
 Voilà, votre fichier sass sera automatiquement compilé en css par webpack.
+
+## Step 7: On divise le js en deux
+Comme on met toutes les librairies dans le `index.js` généré, a chaque petit changement de ce dernier son hash change et donc l'utilisateur doit retélécharger toutes les librairies. C'est pas vraiment une bonne idée. On va donc le diviser en deux un avec notre code et un avec les librairies.
+
+### Étapes
+
+#### On ajoute une section dans common
+
+Dans le fichier common, on ajoute une section optimization:
+```js
+optimization: {
+  splitChunks: {
+    cacheGroups: {
+      commons: {
+        test: /[\\/]node_modules[\\/]/,
+        name: 'vendor',
+        chunks: 'all'
+      }
+    }
+  }
+},
+```
+
+Qui indique: tout ce qui se trouve dans `node_modules` vas dans le fichier `vendor`.
+
+Voilà a chaque changement dans votre code, l'utilisateur ne retélécharge pas toutes les libs :)
