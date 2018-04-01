@@ -1,0 +1,16 @@
+$blue: #4b62f9;
+$grey: #eaeaea;
+
+h1 {
+  color: $blue;
+}
+
+.with-margin {
+  margin: 10px;
+  padding: 10px;
+  background-color: $grey;
+
+  p {
+    color: $blue;
+  }
+}

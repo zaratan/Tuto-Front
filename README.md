@@ -453,3 +453,68 @@ Il ne nous reste "plus qu'a" retirer le link du haut du fichier `src/index.html`
 
 A la fin de cette étape vous avez un site qui se build proprement, qui fera du caching d'asset et qui sera pratique a utiliser en dev.
 
+## Step 6: Sass
+
+On va ajouter un preprocesseur de [sass](https://sass-lang.com/) directement dans webpack parce que du css avec des variables c'est mieux.
+
+### Étapes
+
+#### Modifier le css
+
+On change `src/index.css` en `src/index.scss` et son contenu en:
+```scss
+$blue: #4b62f9;
+$grey: #eaeaea;
+
+h1 {
+  color: $blue;
+}
+
+.with-margin {
+  margin: 10px;
+  padding: 10px;
+  background-color: $grey;
+
+  p {
+    color: $blue;
+  }
+}
+```
+
+#### Ajouter le loader
+```bash
+yarn add -D sass-loader node-sass 
+```
+
+Puis on modifie le common avec une règle différente pour le scss:
+```js
+{
+  test: /\.scss$/,
+  use: ExtractTextPlugin.extract({
+    fallback: 'style-loader',
+    use: [{
+      loader: 'css-loader',
+      options: {
+        url: false,
+        minimize: true,
+        sourceMap: true
+      }
+    }, 
+      {
+        loader: 'sass-loader',
+        options: {
+          sourceMap: true
+        }
+      }]
+  })
+},
+```
+
+#### On change l'import dans le js
+
+Ne pas oublier de changer le nom du fichier dans `index.js`
+```js
+import './index.scss'
+```
+
+Voilà, votre fichier sass sera automatiquement compilé en css par webpack.

@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import $ from 'jquery'
 
-import './index.css'
+import './index.scss'
 
 const users = [
     { 'name': 'fred',   'age': 48 },
