@@ -204,7 +204,7 @@ export default merge(common, client)
 ```
 
 Dans webpack.prod.babel.js:
-``` webpack.prod.babel.js
+```js webpack.prod.babel.js
 import merge from 'webpack-merge'
 
 import common from './webpack.common'
