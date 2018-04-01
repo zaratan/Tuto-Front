@@ -3,6 +3,7 @@ import webpack from 'webpack'
 import CleanWebpackPlugin from 'clean-webpack-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import ExtractTextPlugin from 'extract-text-webpack-plugin'
+import ManifestPlugin from 'webpack-manifest-plugin'
 
 export default {
   name: 'app',
@@ -71,6 +72,15 @@ export default {
     new CleanWebpackPlugin(['dist']),
     new HtmlWebpackPlugin({
       template: './src/index.html'
+    }),
+    new ManifestPlugin({
+      seed: {
+        name: 'Test App',
+        short_name: 'Test App',
+        start_url: '/',
+        display: 'standalone',
+        description: 'Test app webpack.',
+      }
     }),
   ],
 }

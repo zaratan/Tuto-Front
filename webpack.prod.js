@@ -20,7 +20,7 @@ var client = {
   },
   devtool: 'source-map',
   plugins: [new _extractTextWebpackPlugin.default({
-    filename: '/css/styles-[hash].css',
+    filename: 'css/styles.[hash].css',
     allChunks: true
   })]
 };

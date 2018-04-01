@@ -544,3 +544,42 @@ optimization: {
 Qui indique: tout ce qui se trouve dans `node_modules` vas dans le fichier `vendor`.
 
 Voilà a chaque changement dans votre code, l'utilisateur ne retélécharge pas toutes les libs :)
+## Step 8: On génère un manifest.json
+Pour utiliser les sourcemap en production et pour aider au referencement (si je ne m'abuse) on veut générer un `manifest.json`
+
+### Étapes
+
+#### On ajoute la librairie
+```bash
+yarn add -D webpack-manifest-plugin
+```
+#### On modifie le common
+On import le plugin en tête du fichier:
+```js
+import ManifestPlugin from 'webpack-manifest-plugin'
+```
+
+Puis on le configure dans les plugins:
+```js
+new ManifestPlugin({
+  seed: {
+    name: 'Test App',
+    short_name: 'Test App',
+    start_url: '/',
+    display: 'standalone',
+    description: 'Test app webpack.',
+  }
+}),
+```
+#### On l'ajoute en haut du fichier html
+On l'ajoute dans le head de `src/index.html`
+
+```html
+<link rel="manifest" href="/manifest.json">
+```
+
+Voilà, vos sourceMaps sont disponibles en production :)
+
+## Conclusion
+
+Yay! Fin du tuto, vous avez maintenant un super build webpack :) (et plus de 900 librairies dans votre `node_modules`)

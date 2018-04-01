@@ -11,7 +11,7 @@ const client = {
   devtool: 'source-map',
   plugins: [
     new ExtractTextPlugin({
-      filename: '/css/styles.[hash].css',
+      filename: 'css/styles.[hash].css',
       allChunks: true
     }),
   ]
