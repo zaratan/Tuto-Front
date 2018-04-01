@@ -1,4 +1,6 @@
-## Step 1: Ajouter Webpack et Babel
+# Webpack tuto
+
+## Step 1: Ajouter Webpack et Babel.
 
 Dans cette étape on fait en sorte que Webpack (outil de build) utilise Babel (outil qui transpile du nouveau JS en JS compatible) automatiquement pour transformer notre index.js en vieux JS. J'utilise `yarn` à la place de `npm` surtout pour des raisons d'habitude et d'agréabilité de commande: https://yarnpkg.com/fr/
 
@@ -107,7 +109,7 @@ On peut donc maintenant l'exécuter en faisant:
 yarn dev
 ```
 
-## Step 2: On importe nos librairies
+## Step 2: On importe nos librairies.
 
 On importe nos librairies depuis le js plutôt que les inclure alamain dans le html:
 
@@ -129,7 +131,7 @@ import $ from 'jquery'
 
 Tout marche, on peut recharger notre page et le JS marche encore :)
 
-## Step 3: On utilise webpack-dev-server
+## Step 3: On utilise webpack-dev-server.
 
 Plutôt qu'utiliser un `--watch` qui recompile tout. On va passer par un "server".
 Ça a deux avantages:
@@ -170,3 +172,284 @@ On remplace les scripts précédents par ceux ci:
 
 On peut maintenant lancer `yarn dev` et visiter `localhost:8080` pour voir notre page.
 Maintenant avec le chrome devtool, dans les sources, dans le dossier webpack on peut trouver nos sources Javascript de base (et elles sont débugables).
+
+## Step 4: Séparer la prod et la dev.
+
+Avoir un environnent de développent et un de production. En dev on veut un environnent pratique pour coder. En prod on veut un environment optimisé et rapide pour l'utilisateur.
+
+### Étapes
+
+#### Ajouter des fichiers
+
+Pour séparer la prod et le dev on va faire deux nouveaux fichiers un pour chaque config (vous comprenez maintenant pourquoi l'autre s'appelait common ;) ).
+
+Dans webpack.dev.babel.js:
+```js webpack.dev.babel.js
+import merge from 'webpack-merge'
+
+import common from './webpack.common'
+
+const client = {
+  mode: 'development',
+  output: {
+    filename: 'js/index.js',
+  },
+  devtool: 'inline-source-map',
+  devServer: {
+    contentBase: './dist',
+  },
+}
+
+export default merge(common, client)
+```
+
+Dans webpack.prod.babel.js:
+``` webpack.prod.babel.js
+import merge from 'webpack-merge'
+
+import common from './webpack.common'
+
+const client = {
+  mode: 'production',
+  output: {
+    filename: 'js/index.js',
+  },
+  devtool: 'source-map',
+}
+
+export default merge(common, client)
+```
+
+La grande différence va être dans le Mode et dans le type de sourcemap. Les sourcesmap c'est ce qui vous sert a visualiser vos sources initiales dans chrome.
+
+#### On modifie le common
+
+Dans le common on retire ce qui avait trait au dev:
+
+```js webpack.common.babel.js
+import path from 'path'
+
+export default {
+  name: 'app',
+  entry: {
+    main: './src/index.js',
+  },
+  output: {
+    path: path.resolve(__dirname, 'dist')
+  },
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: 'babel-loader',
+      },
+    ]
+  },
+}
+```
+
+#### On ajoute webpack-merge
+
+```bash
+yarn add -D webpack-merge
+```
+
+#### On modifie les scripts
+
+```json package.json
+  "scripts": {
+    "common:babel": "babel webpack.common.babel.js > webpack.common.js",
+    "dev:babel": "yarn common:babel && babel webpack.dev.babel.js > webpack.dev.js",
+    "prod:babel": "yarn common:babel && babel webpack.prod.babel.js > webpack.prod.js",
+    "dev": "yarn dev:babel && webpack-dev-server -d --progress --config webpack.dev.js",
+    "dev:build": "yarn dev:babel && webpack --config webpack.dev.js --progress -d --watch",
+    "prod:build": "yarn prod:babel && webpack --config webpack.prod.js --progress -p"
+  },
+```
+
+2 seront utiles au jour le jour:
+
+- **dev**: Qui lance le serveur de development accessible sur localhost:8080
+- **prod:build**: Qui build dans le dossier `dist` le site de production.
+
+PS: J'ai oublié de commit a cette étape…
+
+## Step 5: On process tous les fichiers à travers webpack
+
+Dans un environement de prod a destination d'un meilleur cache on ajoute a chaque le hashcode du fichier a la fin de leur nom.
+Cependant pour faire ça il va falloir injecter les-dits nouveaux noms fichiers dans le html directement.
+On peut aussi en profiter pour minifier le css.
+
+### Étapes
+
+#### Deplacer tous les fichiers dans src
+
+Déplacer les fichiers `index.html`, `frustration.gif` et `index.css` dans le dossier `src`
+
+Webpack process les fichiers a partir de ce dossier donc on va tout y mettre.
+
+#### Ajouter les loaders
+
+On ajoute les différents loaders pour chaque type de fichier:
+
+##### Le HTML
+
+```bash
+yarn add -D html-loader
+```
+
+Puis on ajoute dans les règles:
+
+```js webpack.common.babel.js
+{
+  test: /\.(html)$/,
+  use: {
+    loader: 'html-loader',
+  }
+},
+```
+
+##### Les images/polices/gifs/etc
+
+```bash
+yarn add -D url-loader file-loader
+```
+
+Puis, dans les règles:
+```js webpack.common.babel.js
+{
+  test: /\.(png|gif|woff|woff2|eot|ttf|svg)$/,
+  loader: 'url-loader', // On essaye de transformer le fichier en string directement dans le html
+  options: {
+    limit: 8192, // Si sa taille est < a 8192 bytes
+    fallback: 'file-loader', // Sinon on en fait un fichier
+  }
+},
+
+```
+
+##### Le css
+
+```bash
+yarn add -D style-loader css-loader
+```
+
+Puis dans les règles:
+```js webpack.common.babel.js
+{
+  test: /\.css$/,
+  use: ExtractTextPlugin.extract( // Je reviens là dessus plus bas
+    {
+      fallback: 'style-loader', // Si l'extraction se passe mal on inclus le css dans le head du html
+      use: 'css-loader', // Sinon on essaye d'en faire un fichier css
+    },
+  ),
+},
+```
+
+#### Ajouter le plugin pour injecter dans le html
+```bash
+yarn add -D html-webpack-plugin
+```
+
+Puis on modifie le fichier common de webpack:
+
+On importe en haut du fichier:
+```js
+import webpack from 'webpack'
+import CleanWebpackPlugin from 'clean-webpack-plugin'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
+```
+
+Puis on ajoute une section plugins:
+
+```js
+plugins: [
+  new webpack.optimize.OccurrenceOrderPlugin(),
+  new CleanWebpackPlugin(['dist']), // J'y reviens plus bas
+  new HtmlWebpackPlugin({
+    template: './src/index.html' // On part du fichier index.html
+  }),
+],
+```
+
+#### On ajoute le fichier css dans le js
+
+Pour que le css soit pris en compte par webpack il faut que celui-ci soit referencé dans le fichier js… On ajoute donc dans `index.js`:
+
+```js
+import './index.css'
+```
+
+#### On extrait le css du bundle js
+
+L'étape précédente a ajouté le css a l'interieur du fichier js généré. On va donc le ré-extraire dans un fichier css à part (**RANT** SERIOUSLY JS?)
+
+```bash
+yarn add -D extract-text-webpack-plugin@next 
+```
+
+On prend la version beta parce que sinon ça ne marche pas avec la version courante de webpack…
+
+On l'inclus en haut du common:
+```js
+import ExtractTextPlugin from 'extract-text-webpack-plugin'
+```
+
+puis on l'utilise pour indiquer quel fichier devra être extrait:
+
+La ligne `use: ExtractTextPlugin.extract(` plus haut.
+
+Ensuite, on indique dans le dev et le prod comment nommer le fichier css:
+
+En dev:
+```js
+plugins: [
+  new ExtractTextPlugin({
+    filename: 'css/styles.css',
+    allChunks: true
+  }),
+]
+```
+
+En prod:
+```js
+plugins: [
+  new ExtractTextPlugin({
+    filename: '/css/styles.[hash].css', // [hash] ajoute le hashcode du fichier dans le nom. A chaque changement du contenu de celui-ci le cache sera donc rafraichi.
+    allChunks: true
+  }),
+]
+```
+
+#### On clean le dossier dist automatiquement a chaque fois
+```bash
+yarn add -D clean-webpack-plugin
+```
+
+Ça va vider le dossier `dist` entre chaque build. Les deux lignes nécessaires ont déjà été ajoutées dans des étapes précédentes.
+
+#### On update les noms généré de chaque fichiers
+On va ajouter le hashcode dans le nom des fichiers js aussi:
+
+En dev:
+```js
+output: {
+  filename: 'js/[name].js',
+},
+```
+
+En prod:
+```js
+output: {
+  filename: 'js/[name].[chunkhash].js',
+},
+```
+
+#### On enlève le <link> du html
+
+Il ne nous reste "plus qu'a" retirer le link du haut du fichier `src/index.html` puisse que celui-ci sera injecté automatiquement par webpack
+
+A la fin de cette étape vous avez un site qui se build proprement, qui fera du caching d'asset et qui sera pratique a utiliser en dev.
+

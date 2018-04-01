@@ -1,6 +1,8 @@
 import _ from 'lodash'
 import $ from 'jquery'
 
+import './index.css'
+
 const users = [
     { 'name': 'fred',   'age': 48 },
     { 'name': 'barney', 'age': 34 },
