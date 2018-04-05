@@ -25,7 +25,7 @@ yarn add -D @babel/preset-env # Module babel qui gère la transformation ES2015 
 
 #### Ajout du loader babel pour webpack
 ```bash
-yarn add -D babel-loader
+yarn add -D babel-loader@next
 ```
 
 #### On écrit le fichier webpack.common.babel.js
