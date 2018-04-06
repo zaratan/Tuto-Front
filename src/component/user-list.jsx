@@ -26,8 +26,18 @@ class UserList extends React.Component {
     })
   }
 
+  handleSubmit(e) {
+    e.preventDefault()
+    this.setState({
+      users: [
+        ...this.state.users,
+        { name: this.state.name, age: this.state.age },
+      ],
+    })
+  }
+
   orderedUsers() {
-    return orderBy(this.props.users, ['name', 'age'], ['asc', 'desc'])
+    return orderBy(this.state.users, ['name', 'age'], ['asc', 'desc'])
   }
 
   render() {
@@ -37,7 +47,12 @@ class UserList extends React.Component {
           <User name={e.name} age={e.age} key={`${e.name}-${e.age}`} />
         ))}
       </ul>,
-      <form key="form">
+      <form
+        key="form"
+        onSubmit={e => {
+          this.handleSubmit(e)
+        }}
+      >
         <label htmlFor="name">Nom:</label>
         <input
           type="text"
