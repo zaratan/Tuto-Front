@@ -12,8 +12,8 @@
     "common:babel": "babel webpack.common.babel.js > webpack.common.js",
     "dev:babel": "yarn common:babel && babel webpack.dev.babel.js > webpack.dev.js",
     "prod:babel": "yarn common:babel && babel webpack.prod.babel.js > webpack.prod.js",
-    "dev": "yarn dev:babel && webpack-dev-server -d --progress --config webpack.dev.js",
-    "dev:build": "yarn dev:babel && webpack --config webpack.dev.js --progress -d --watch",
+    "dev": "yarn dev:babel && webpack-dev-server -d --progress --config webpack.dev.js --hot",
+    "dev:build": "yarn dev:babel && webpack --config webpack.dev.js --progress -d",
     "prod:build": "yarn prod:babel && webpack --config webpack.prod.js --progress -p"
   },
   "devDependencies": {
@@ -42,6 +42,7 @@
     "jquery": "^3.3.1",
     "lodash": "^4.17.5",
     "react": "^16.3.1",
-    "react-dom": "^16.3.1"
+    "react-dom": "^16.3.1",
+    "react-hot-loader": "^4.0.1"
   }
 }
