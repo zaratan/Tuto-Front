@@ -1,6 +1,7 @@
 import React from 'react'
 
 import frustrationGif from '../frustration.gif'
+import UserList from './user-list'
 
 export default ({ users }) => (
   <div className="app">
@@ -8,13 +9,7 @@ export default ({ users }) => (
     <div className="with-margin">
       <p>Here goes the JS</p>
       <div id="container">
-        <ul>
-          {users.map(e => (
-            <li>
-              <span className="user-name">{e.name}</span>: {e.age}
-            </li>
-          ))}
-        </ul>
+        <UserList users={users} />
       </div>
     </div>
     <div className="with-margin">
