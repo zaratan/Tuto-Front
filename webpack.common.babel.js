@@ -11,12 +11,15 @@ export default {
     main: './src/index.js',
   },
   output: {
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, 'dist'),
+  },
+  resolve: {
+    extensions: ['.js', '.jsx'],
   },
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.jsx?$/,
         exclude: /node_modules/,
         loader: 'babel-loader',
       },
@@ -24,7 +27,7 @@ export default {
         test: /\.(html)$/,
         use: {
           loader: 'html-loader',
-        }
+        },
       },
       {
         test: /\.(png|gif|woff|woff2|eot|ttf|svg)$/,
@@ -33,29 +36,32 @@ export default {
           limit: 8192,
           fallback: 'file-loader',
           name: 'assets/[hash]-[name].[ext]',
-        }
+        },
       },
       {
         test: /\.scss$/,
         use: ExtractTextPlugin.extract({
           fallback: 'style-loader',
           publicPath: '/',
-          use: [{
-            loader: 'css-loader',
-            options: {
-              minimize: true,
-              sourceMap: true
-            }
-          },
+          use: [
+            {
+              loader: 'css-loader',
+              options: {
+                url: false,
+                minimize: true,
+                sourceMap: true,
+              },
+            },
             {
               loader: 'sass-loader',
               options: {
-                sourceMap: true
-              }
-            }]
-        })
+                sourceMap: true,
+              },
+            },
+          ],
+        }),
       },
-    ]
+    ],
   },
   optimization: {
     splitChunks: {
@@ -63,16 +69,16 @@ export default {
         commons: {
           test: /[\\/]node_modules[\\/]/,
           name: 'vendor',
-          chunks: 'all'
-        }
-      }
-    }
+          chunks: 'all',
+        },
+      },
+    },
   },
   plugins: [
     new webpack.optimize.OccurrenceOrderPlugin(),
     new CleanWebpackPlugin(['dist']),
     new HtmlWebpackPlugin({
-      template: './src/index.html'
+      template: './src/index.html',
     }),
     new ManifestPlugin({
       seed: {
@@ -81,7 +87,7 @@ export default {
         start_url: '/',
         display: 'standalone',
         description: 'Test app webpack.',
-      }
+      },
     }),
   ],
 }

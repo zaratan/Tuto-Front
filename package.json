@@ -17,9 +17,10 @@
     "prod:build": "yarn prod:babel && webpack --config webpack.prod.js --progress -p"
   },
   "devDependencies": {
-    "@babel/cli": "^7.0.0-beta.42",
-    "@babel/core": "^7.0.0-beta.42",
-    "@babel/preset-env": "^7.0.0-beta.42",
+    "@babel/cli": "^7.0.0-beta.44",
+    "@babel/core": "^7.0.0-beta.44",
+    "@babel/preset-env": "^7.0.0-beta.44",
+    "@babel/preset-react": "^7.0.0-beta.44",
     "babel-loader": "^8.0.0-beta.2",
     "clean-webpack-plugin": "^0.1.19",
     "css-loader": "^0.28.11",
@@ -39,6 +40,8 @@
   },
   "dependencies": {
     "jquery": "^3.3.1",
-    "lodash": "^4.17.5"
+    "lodash": "^4.17.5",
+    "react": "^16.3.1",
+    "react-dom": "^16.3.1"
   }
 }
