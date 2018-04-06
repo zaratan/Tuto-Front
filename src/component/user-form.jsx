@@ -1,4 +1,5 @@
 import React from 'react'
+import { Button, Form, FormGroup, Label, Input } from 'reactstrap'
 
 class UserForm extends React.Component {
   constructor(props) {
@@ -29,32 +30,37 @@ class UserForm extends React.Component {
 
   render() {
     return (
-      <form
+      <Form
+        inline
         key="form"
         onSubmit={e => {
           this.handleSubmit(e)
         }}
       >
-        <label htmlFor="name">Nom:</label>
-        <input
-          type="text"
-          name="name"
-          value={this.state.name}
-          onChange={e => {
-            this.handleChangeName(e.target.value)
-          }}
-        />
-        <label htmlFor="age">Age:</label>
-        <input
-          type="number"
-          name="age"
-          value={this.state.age}
-          onChange={e => {
-            this.handleChangeAge(e.target.value)
-          }}
-        />
-        <input type="submit" />
-      </form>
+        <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+          <Label htmlFor="name">Nom:</Label>
+          <Input
+            type="text"
+            name="name"
+            value={this.state.name}
+            onChange={e => {
+              this.handleChangeName(e.target.value)
+            }}
+          />
+        </FormGroup>
+        <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
+          <Label htmlFor="age">Age:</Label>
+          <Input
+            type="number"
+            name="age"
+            value={this.state.age}
+            onChange={e => {
+              this.handleChangeAge(e.target.value)
+            }}
+          />
+        </FormGroup>
+        <Button color="primary">Ajouter</Button>
+      </Form>
     )
   }
 }
