@@ -14,6 +14,4 @@ const users = [
   { name: 'denis', age: 30 },
 ]
 
-const to_print = _.orderBy(users, ['name', 'age'], ['asc', 'desc'])
-
-render(<App users={to_print} />, document.getElementById('app'))
+render(<App users={users} />, document.getElementById('app'))
