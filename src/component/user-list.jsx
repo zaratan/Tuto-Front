@@ -32,7 +32,7 @@ class UserList extends React.Component {
           <User name={e.name} age={e.age} key={`${e.name}-${e.age}`} />
         ))}
       </ul>,
-      <UserForm addUser={this.addUser} />,
+      <UserForm key="form" addUser={this.addUser} />,
     ]
   }
 }
