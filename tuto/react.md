@@ -257,3 +257,7 @@ L'argument `children` est spécial et contient tous les enfants que vous défini
 
 À ce moment là vous devriez avoir une page complètement en React.
 Dans le monde React on appelle ces arguments des "propriétés" ou "props"
+
+## Step 3: Vers une app dynamique
+
+On va ajouter un formulaire pour ajouter un nouvel utilisateur ()
