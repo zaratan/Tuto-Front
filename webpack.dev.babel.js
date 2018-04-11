@@ -15,7 +15,7 @@ const client = {
   plugins: [
     new ExtractTextPlugin({
       filename: 'css/styles.css',
-      allChunks: true
+      allChunks: true,
     }),
   ]
 }

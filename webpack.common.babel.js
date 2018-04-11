@@ -32,20 +32,21 @@ export default {
         options: {
           limit: 8192,
           fallback: 'file-loader',
+          name: 'assets/[hash]-[name].[ext]',
         }
       },
       {
         test: /\.scss$/,
         use: ExtractTextPlugin.extract({
           fallback: 'style-loader',
+          publicPath: '/',
           use: [{
             loader: 'css-loader',
             options: {
-              url: false,
               minimize: true,
               sourceMap: true
             }
-          }, 
+          },
             {
               loader: 'sass-loader',
               options: {
