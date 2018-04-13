@@ -255,9 +255,343 @@ L'argument `children` est spécial et contient tous les enfants que vous défini
 
 ### Conclusion
 
+* Dans le monde React on appelle ces arguments des "propriétés" ou "props";
+* On a vu ce qu'était un (pure) component en React;
+* Un component c'est un petit bout d'app qui contient tout ce dont il a besoin pour se "render" ie s'afficher.
+
 À ce moment là vous devriez avoir une page complètement en React.
-Dans le monde React on appelle ces arguments des "propriétés" ou "props"
 
 ## Step 3: Vers une app dynamique
 
-On va ajouter un formulaire pour ajouter un nouvel utilisateur ()
+On va ajouter un formulaire pour ajouter un nouvel utilisateur (tout en conservant le tri ;) ) histoire que la page ne soit pas "que" statique.
+
+### Un peu de théorie (bis)
+
+On a vu les components sous la forme de fonctions simple.
+C'est très bien tant que le component est statique et ne dépend que de propriété qu'on lui passe.
+
+Si jamais on a besoin de:
+* Lui faire faire des appels AJAX
+* Lui faire gerer des evenements de type clic/formulaire
+* Gérer un state
+
+On va devoir le transformer en classe.
+
+Une classe de component en React à la forme suivante:
+```jsx
+import React from 'react'
+
+class MonComponent extends React.Component {
+  constructor(props) {
+    super(props)
+    …
+  }
+
+  render() {
+    …
+    return (
+      <…>…</…>
+    )
+  }
+}
+
+export default MonComponent
+```
+
+On l'appelle dans le reste de l'app comme on appelait notre fonction d'avant.
+
+C'est bien cool… Mais qu'est-ce que ça change tout ça ?
+
+#### Le state
+
+Le state c'est l'état du component, c'est à dire un ensemble de variable qui lui permettent de s'afficher.
+C'est différent des props dans le sens où c'est initialisé dans le constructor du component (et donc chaque instance de votre component aura un state différent) 
+et géré par lui ensuite (pensez variable d'instance) là où les props ne peuvent pas être changées par le component en lui-même.
+
+
+Par exemple
+```jsx
+import React from 'react'
+
+class MonComponent extends React.Component {
+  constructor(props) {
+    super(props)
+    …
+    this.state = {
+      message: "I PLAY POKEMON GO EVERYDAY"
+    }
+  }
+
+  render() {
+    …
+    return (
+      <p>{this.state.message}</p>
+    )
+  }
+}
+
+export default MonComponent
+```
+
+Quand je dis que le state peut être modifié par le component… C'est vrai avec un bémol.
+Un component ne peut pas modifier une value de son state de cette manière:
+```jsx
+this.state.message = "NOPE"
+```
+
+Par contre il peut **remplacer** une value en faisant:
+```
+this.setState({
+  message: "Yep",
+})
+```
+#### On peut ajouter plein de fonctions dans le component
+
+Genre pour handle le tri d'une props (:wink:) ou pour faire un appel API.
+
+#### Un petit point sur le render
+
+Le render est appelé A CHAQUE FOIS qu'une props ou un state change et donc UN BOUT (et pas la page entière) de votre app se met a jour.
+
+### La pratique
+
+Ajoutons un formulaire d'ajout d'utilisateur à notre user-list
+
+#### On fait une classe
+
+```jsx
+import React from 'react'
+import { orderBy } from 'lodash'
+
+class UserList extends React.Component {
+  constructor(props) {
+    super(props)
+  }
+
+  orderedUsers() {
+    return orderBy(this.props.users, ['name', 'age'], ['asc', 'desc'])
+  }
+
+  render() {
+    return (
+      <ul>
+        {this.orderedUsers().map(e => (
+          <User name={e.name} age={e.age} key={`${e.name}-${e.age}`} />
+        ))}
+      </ul>
+    )
+  }
+}
+
+export default UserList
+```
+
+Ça fait exactement la même chose qu'avant mais c'est plus lourd :D
+
+#### On ajoute le formulaire
+
+```jsx
+  render() {
+    return ([
+      <ul key="list">
+        {this.orderedUsers().map(e => (
+          <User name={e.name} age={e.age} key={`${e.name}-${e.age}`} />
+        ))}
+      </ul>,
+      <form key="form">
+        <label htmlFor="name">Nom:</label>
+        <input type="text" name="name" />
+        <label htmlFor="age">Age:</label>
+        <input type="number" name="age" />
+        <input type="submit" />
+      </form>
+    ])
+  }
+```
+
+A cette étape là si on clic sur le bouton ça recharge la page mais ça ne fait rien
+(Dans les choses a noter, j'ai ajouter une key à chaque element de la liste qu'on return)
+
+#### On envoi le state de notre formulaire
+
+Pour l'instant notre formulaire a beau être magnifique, React n'a aucune connaissance de ce qui est tapé dedans.
+On va donc lier chaque champ a un state
+
+* On ajoute le state
+```jsx
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      age: 0,
+      name: '',
+    }
+  }
+```
+
+Et on en profite pour lui donner des valeurs par défaut.
+
+* On update le render avec les valeurs du state:
+```jsx
+<input type="text" name="name" value={this.state.name}/>
+[…]
+<input type="number" name="age" value={this.state.age}/>
+```
+
+A cette étape là, la value de chaque input est complètement gérée par React. Comment on gère l'update du state ?
+
+* Update du state
+  * On ajoute des fonctions pour gerer chaque update
+```jsx
+  handleChangeName(name) {
+    this.setState({
+      name,
+    })
+  }
+
+  handleChangeAge(age) {
+    this.setState({
+      age: age ? parseInt(age) : '',
+    })
+  }
+```
+  * On les trigger:
+```jsx
+ 	<input
+          type="text"
+          name="name"
+          value={this.state.name}
+          onChange={e => {
+            this.handleChangeName(e.target.value)
+          }}
+        />
+        […]
+        <input
+          type="number"
+          name="age"
+          value={this.state.age}
+          onChange={e => {
+            this.handleChangeAge(e.target.value)
+          }}
+        />
+```
+
+Le code final du component (a ce moent ressemble à):
+
+```jsx
+import React from 'react'
+import { orderBy } from 'lodash'
+
+import User from './user'
+
+class UserList extends React.Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      name: '',
+      age: 0,
+    }
+  }
+
+  handleChangeName(name) {
+    this.setState({
+      name,
+    })
+  }
+
+  handleChangeAge(age) {
+    this.setState({
+      age: age ? parseInt(age) : '',
+    })
+  }
+
+  orderedUsers() {
+    return orderBy(this.props.users, ['name', 'age'], ['asc', 'desc'])
+  }
+
+  render() {
+    return [
+      <ul key="list">
+        {this.orderedUsers().map(e => (
+          <User name={e.name} age={e.age} key={`${e.name}-${e.age}`} />
+        ))}
+      </ul>,
+      <form key="form">
+        <label htmlFor="name">Nom:</label>
+        <input
+          type="text"
+          name="name"
+          value={this.state.name}
+          onChange={e => {
+            this.handleChangeName(e.target.value)
+          }}
+        />
+        <label htmlFor="age">Age:</label>
+        <input
+          type="number"
+          name="age"
+          value={this.state.age}
+          onChange={e => {
+            this.handleChangeAge(e.target.value)
+          }}
+        />
+        <input type="submit" />
+      </form>,
+    ]
+  }
+}
+
+export default UserList
+```
+
+A cet instant précis, notre formulaire se comporte comme un formulaire normal mais est complètement géré par React qui stocke au passage les valeurs dans son state.
+
+#### On gère le submit
+
+Pour ajouter des utilisateurs… Il va falloir que les utilisateurs se trouvent dans le state du component:
+
+```jsx
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      name: '',
+      age: 0,
+      users: this.props.users,
+    }
+  }
+```
+
+Puis qu'on affiche bien la liste du state et pas celle des props:
+```jsx
+  orderedUsers() {
+    return orderBy(this.state.users, ['name', 'age'], ['asc', 'desc'])
+  }
+
+```
+
+Puis on ajoute une fonction qui update le state avec un nouvel utilisateur:
+```jsx
+  handleSubmit(e) {
+    e.preventDefault() // On empèche la page de se recharger :D
+    this.setState({
+      users: [
+        ...this.state.users,
+        { name: this.state.name, age: this.state.age },
+      ], // Ceci est une façon de construire un tableau contenant tout les éléments du tableau this.state.users en ajoutant un de plus à la fin
+    })
+  }
+```
+
+Et enfin, on ajoute l'appel de fonction quand on submit le controller:
+```jsx
+  <form
+    key="form"
+    onSubmit={e => {
+      this.handleSubmit(e)
+    }}
+  >
+```
+
+Voilà, vous pouvez maintenant avoir une super app dynamique :)
