@@ -12,14 +12,15 @@
     "common:babel": "babel webpack.common.babel.js > webpack.common.js",
     "dev:babel": "yarn common:babel && babel webpack.dev.babel.js > webpack.dev.js",
     "prod:babel": "yarn common:babel && babel webpack.prod.babel.js > webpack.prod.js",
-    "dev": "yarn dev:babel && webpack-dev-server -d --progress --config webpack.dev.js",
-    "dev:build": "yarn dev:babel && webpack --config webpack.dev.js --progress -d --watch",
+    "dev": "yarn dev:babel && webpack-dev-server -d --progress --config webpack.dev.js --hot",
+    "dev:build": "yarn dev:babel && webpack --config webpack.dev.js --progress -d",
     "prod:build": "yarn prod:babel && webpack --config webpack.prod.js --progress -p"
   },
   "devDependencies": {
-    "@babel/cli": "^7.0.0-beta.42",
-    "@babel/core": "^7.0.0-beta.42",
-    "@babel/preset-env": "^7.0.0-beta.42",
+    "@babel/cli": "^7.0.0-beta.44",
+    "@babel/core": "^7.0.0-beta.44",
+    "@babel/preset-env": "^7.0.0-beta.44",
+    "@babel/preset-react": "^7.0.0-beta.44",
     "babel-loader": "^8.0.0-beta.2",
     "clean-webpack-plugin": "^0.1.19",
     "css-loader": "^0.28.11",
@@ -38,7 +39,13 @@
     "webpack-merge": "^4.1.2"
   },
   "dependencies": {
+    "bootstrap": "^4.0.0",
     "jquery": "^3.3.1",
-    "lodash": "^4.17.5"
+    "lodash": "^4.17.5",
+    "popper.js": "^1.14.3",
+    "react": "^16.3.1",
+    "react-dom": "^16.3.1",
+    "react-hot-loader": "^4.0.1",
+    "reactstrap": "^5.0.0-beta.3"
   }
 }
