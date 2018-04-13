@@ -594,4 +594,102 @@ Et enfin, on ajoute l'appel de fonction quand on submit le controller:
   >
 ```
 
+### Conclusion
+
 Voilà, vous pouvez maintenant avoir une super app dynamique :)
+
+## Step 4: Bon… Notre component UserList est un peu trop. Division !
+
+On va refactorer ce code pour avoir 2 components un pour notre UserList et un pour le UserForm.
+
+### Étape 1: UserForm
+
+On crée un component simple de form. Le seul problème c'est que le state `users` sera pas géré par lui mais par la UserList.
+Du coup le submit va devoir update le state d'un autre component…
+Comment on fait ça? Le UserList en créant le UserForm va lui passer la fonction d'update:
+
+```jsx
+handleSubmit(e) {
+  e.preventDefault()
+  this.props.addUser(this.state)
+}
+```
+
+Le reste est globalement identique à ce qu'on avait avant je ne le détaille donc pas.
+
+### Étape 2: UserList
+On remplace le form par:
+```jsx
+<UserForm addUser={this.addUser} />,
+```
+
+On crée la fonction addUser:
+```jsx
+addUser(user) {
+  this.setState({
+    users: [...this.state.users, user],
+  })
+}
+```
+
+Et finalement le bout étrange, dans le constructeur on link le this de addUser a celui de la UserList.
+```jsx
+
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      users: this.props.users,
+    }
+
+    this.addUser = this.addUser.bind(this) // Ça. Oui c'est bizarre. Je sais. Mais pensez y, ça marche.
+  }
+```
+
+### Conclusion
+
+Voilà vous savez maintenant comment updater le state d'un élément parent (ie: Il faut que celui-ci nous fournisse la fonction pour le faire).
+
+## Step 5 (optional): Hot Module Reload
+
+Le fait que ça recharge toute la page a chaque update de n'importe que bout du code c'est chiant. On ajoute donc du reload a chaud de module:
+
+Je vous laisse regarder ce [commit](https://github.com/denispasin/Tuto-Webpack/commit/67863e7075c2ff09c408cb46a785611118ee887e) qui le montre assez bien :)
+
+## Step 6: Bootstrap \o/
+
+On va ajouter Bootstrap dans React. En quoi c'est différent d'un bootstrap classique ?
+
+1. Comme on a du sass, on va pour le customiser facilement
+2. On va pouvoir profiter des components custom de React pour ne pas avoir a definir toutes les classes de bootstrap
+
+### Étape 1: on ajoute les libs
+
+```bash
+yarn add bootstrap popper.js reactstrap@next
+```
+
+### Étape 2: on ajoute bootstrap dans le scss
+Tout en haut du fichier scss on ajoute:
+
+```scss
+@import "~bootstrap/scss/bootstrap";
+```
+
+Voilà. A ce point vous avez déjà une app avec bootstrap. Vous pouvez le customiser en suivant le début de ce [guide](https://getbootstrap.com/docs/4.0/getting-started/webpack/#importing-precompiled-sass).
+
+### Étape 3: On utilise Reactstrap
+
+Je vous invite a aller jeter un œil à la doc: https://reactstrap.github.io/components/buttons/
+Si vous avez bien compris comment marchaient les components, utiliser reactstrap devrait être un jeu d'enfant.
+[Ici](https://github.com/denispasin/Tuto-Webpack/blob/2f613ec84910fb4cb4007f6092a56f06d7e8efb2/src/component/user-form.jsx) par exemple j'ai transformé le UserForm avec Bootstrap.
+
+## Conclusion
+
+Voilà. Vous pouvez dors et déjà voler de vos propres ailes et faires des apps en React relativement complexes (les appels API seront les bouts qui seront encore un peu bizarre pour l'instant).
+
+## Liens bonus
+
+* semantic-ui en react: https://react.semantic-ui.com/
+* La doc de React: https://reactjs.org/
+* Reactstrap: https://reactstrap.github.io/
